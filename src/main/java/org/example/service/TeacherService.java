@@ -1,4 +1,4 @@
 package org.example.service;
 
-public class TeacherService {
+public interface TeacherService {
 }
