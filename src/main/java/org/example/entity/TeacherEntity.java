@@ -8,9 +8,6 @@ import lombok.*;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-
-
-
 public class TeacherEntity {
 
     @Id
@@ -21,6 +18,4 @@ public class TeacherEntity {
     private String subject;
     private String email;
     private String phone;
-
-
 }
