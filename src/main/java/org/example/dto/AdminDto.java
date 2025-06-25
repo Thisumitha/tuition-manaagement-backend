@@ -1,4 +1,4 @@
 package org.example.dto;
 
-public class Teacher {
+public class AdminDto {
 }
