@@ -2,8 +2,10 @@ package org.example.repository;
 
 import org.example.entity.HallEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.stereotype.Repository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 
-@Repository
 public interface HallRepository extends JpaRepository<HallEntity, Long> {
+
+
 }

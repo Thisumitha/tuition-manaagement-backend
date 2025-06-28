@@ -1,71 +1,41 @@
 package org.example.service.impl;
 
-import lombok.Builder;
+import lombok.RequiredArgsConstructor;
 import org.example.dto.HallDto;
 import org.example.entity.HallEntity;
 import org.example.repository.HallRepository;
 import org.example.service.HallService;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
-@Builder
+
 @Service
+@RequiredArgsConstructor
 public class HallServiceImpl implements HallService {
 
-    @Autowired
-    private HallRepository hallRepository;
+    private final HallRepository hallRepository;
+    private final ModelMapper modelMapper;
 
     @Override
     public HallDto saveHall(HallDto dto) {
-        HallEntity entity = HallEntity.builder()
-                .className(dto.getClassName())
-                .teacher(dto.getTeacher())
-                .students(dto.getStudents())
-                .day(dto.getDay())
-                .timeSlot(dto.getTimeSlot())
-                .build();
-
-        HallEntity saved = hallRepository.save(entity);
-
-        return HallDto.builder()
-                .id(saved.getId())
-                .className(saved.getClassName())
-                .teacher(saved.getTeacher())
-                .students(saved.getStudents())
-                .day(saved.getDay())
-                .timeSlot(saved.getTimeSlot())
-                .build();
+        HallEntity hall = modelMapper.map(dto, HallEntity.class);
+        HallEntity saved = hallRepository.save(hall);
+        return modelMapper.map(saved, HallDto.class);
     }
 
     @Override
     public List<HallDto> getAllHalls() {
-        return hallRepository.findAll()
-                .stream()
-                .map(hall -> HallDto.builder()
-                        .id(hall.getId())
-                        .className(hall.getClassName())
-                        .teacher(hall.getTeacher())
-                        .students(hall.getStudents())
-                        .day(hall.getDay())
-                        .timeSlot(hall.getTimeSlot())
-                        .build())
+        return hallRepository.findAll().stream()
+                .map(h -> modelMapper.map(h, HallDto.class))
                 .collect(Collectors.toList());
     }
 
     @Override
     public HallDto getHallById(Long id) {
-        Optional<HallEntity> optional = hallRepository.findById(id);
-        return optional.map(hall -> HallDto.builder()
-                        .id(hall.getId())
-                        .className(hall.getClassName())
-                        .teacher(hall.getTeacher())
-                        .students(hall.getStudents())
-                        .day(hall.getDay())
-                        .timeSlot(hall.getTimeSlot())
-                        .build())
+        return hallRepository.findById(id)
+                .map(h -> modelMapper.map(h, HallDto.class))
                 .orElse(null);
     }
 

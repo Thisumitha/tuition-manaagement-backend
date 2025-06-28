@@ -11,5 +11,6 @@ public interface StudentService {
     StudentDto updateStudent(Long id, StudentDto studentDTO);
     void deleteStudent(Long id);
     long getStudentCount();
-
+    List<StudentDto> getUnpaidStudents();
+    void processStudentPayment(Long studentId, double amount);
 }

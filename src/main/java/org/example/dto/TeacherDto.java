@@ -12,4 +12,5 @@ public class TeacherDto {
     private String subject;
     private String email;
     private String phone;
+    private  double wallet;
 }

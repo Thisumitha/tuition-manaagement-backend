@@ -7,6 +7,7 @@ import org.example.repository.StudentRepository;
 import org.example.service.StudentService;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -59,6 +60,33 @@ public class StudentServiceImpl implements StudentService {
         return studentRepository.count();
     }
 
+    @Override
+    public List<StudentDto> getUnpaidStudents() {
+        return studentRepository.findAll().stream()
+                .filter(student -> student.getWallet() > 0)
+                .map(student -> modelMapper.map(student, StudentDto.class))
+                .collect(Collectors.toList());
+    }
+    @Override
+    @Transactional // Ensures the operation is atomic
+    public void processStudentPayment(Long studentId, double amount) {
+        StudentEntity student = studentRepository.findById(studentId)
+                .orElseThrow(() -> new RuntimeException("Student not found with ID: " + studentId));
+
+        if (amount <= 0) {
+            throw new IllegalArgumentException("Payment amount must be positive.");
+        }
+
+        // Ensure the paid amount does not exceed the due amount
+        if (amount > student.getWallet()) {
+            throw new IllegalArgumentException("Payment amount exceeds the due amount. Due: $" + student.getWallet());
+        }
+
+        // Reduce the wallet amount by the paid amount
+        student.setWallet(student.getWallet() - amount);
+
+        studentRepository.save(student);
+    }
 
 
 }

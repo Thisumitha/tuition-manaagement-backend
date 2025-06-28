@@ -10,4 +10,5 @@ public class AdminDto {
     private String username;
     private String email;
     private String password;
+    private double balance;
 }

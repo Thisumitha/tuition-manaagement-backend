@@ -18,4 +18,5 @@ public class StudentEntity {
     private String email;
     private String phone;
     private String subject;
+    private  double wallet;
 }

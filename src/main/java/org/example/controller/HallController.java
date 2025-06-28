@@ -1,19 +1,19 @@
 package org.example.controller;
 
+import lombok.RequiredArgsConstructor;
 import org.example.dto.HallDto;
 import org.example.service.HallService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
 @RestController
 @RequestMapping("/api/halls")
-@CrossOrigin // Enable if accessing from frontend
+@CrossOrigin(origins = "http://localhost:5173")
+@RequiredArgsConstructor
 public class HallController {
 
-    @Autowired
-    private HallService hallService;
+    private final HallService hallService;
 
     @PostMapping
     public HallDto createHall(@RequestBody HallDto dto) {
@@ -31,7 +31,7 @@ public class HallController {
     }
 
     @DeleteMapping("/{id}")
-    public void deleteHall(@PathVariable Long id) {
+    public void deleteHall(@PathVariable("id") Long id) {
         hallService.deleteHall(id);
     }
 }

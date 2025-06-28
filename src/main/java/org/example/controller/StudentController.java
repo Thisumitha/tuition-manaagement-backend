@@ -7,7 +7,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-
+@CrossOrigin(origins = "http://localhost:5173")
 @RestController
 @RequestMapping("/api/students")
 @RequiredArgsConstructor
@@ -45,5 +45,26 @@ public class StudentController {
     public ResponseEntity<Long> getStudentCount() {
         return ResponseEntity.ok(studentService.getStudentCount());
     }
+
+    @GetMapping("/unpaid")
+    public List<StudentDto> getUnpaidStudents() {
+        return studentService.getUnpaidStudents();
+    }
+    @PostMapping("/pay/{id}")
+    public ResponseEntity<String> markStudentAsPaid(
+            @PathVariable("id") Long id,
+            @RequestParam("amount") double amount
+
+    )
+    {
+        System.out.println(id+" "+amount);
+        try {
+            studentService.processStudentPayment(id, amount);
+            return ResponseEntity.ok("Payment of $" + String.format("%.2f", amount) + " marked as completed for student ID: " + id);
+        } catch (RuntimeException e) {
+            return ResponseEntity.badRequest().body("Payment failed: " + e.getMessage());
+        }
+    }
+
 
 }
