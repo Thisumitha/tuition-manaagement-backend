@@ -40,4 +40,10 @@ public class StudentController {
         studentService.deleteStudent(id);
         return ResponseEntity.noContent().build();
     }
+
+    @GetMapping("/count")
+    public ResponseEntity<Long> getStudentCount() {
+        return ResponseEntity.ok(studentService.getStudentCount());
+    }
+
 }

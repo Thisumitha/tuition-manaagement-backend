@@ -1,5 +1,6 @@
 package org.example.service.impl;
 
+import lombok.Builder;
 import org.example.dto.HallDto;
 import org.example.entity.HallEntity;
 import org.example.repository.HallRepository;
@@ -10,7 +11,7 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
-
+@Builder
 @Service
 public class HallServiceImpl implements HallService {
 
@@ -20,28 +21,51 @@ public class HallServiceImpl implements HallService {
     @Override
     public HallDto saveHall(HallDto dto) {
         HallEntity entity = HallEntity.builder()
-                .name(dto.getName())
-                .capacity(dto.getCapacity())
-                .location(dto.getLocation())
+                .className(dto.getClassName())
+                .teacher(dto.getTeacher())
+                .students(dto.getStudents())
+                .day(dto.getDay())
+                .timeSlot(dto.getTimeSlot())
                 .build();
 
         HallEntity saved = hallRepository.save(entity);
 
-        return new HallDto(saved.getId(), saved.getName(), saved.getCapacity(), saved.getLocation());
+        return HallDto.builder()
+                .id(saved.getId())
+                .className(saved.getClassName())
+                .teacher(saved.getTeacher())
+                .students(saved.getStudents())
+                .day(saved.getDay())
+                .timeSlot(saved.getTimeSlot())
+                .build();
     }
 
     @Override
     public List<HallDto> getAllHalls() {
         return hallRepository.findAll()
                 .stream()
-                .map(hall -> new HallDto(hall.getId(), hall.getName(), hall.getCapacity(), hall.getLocation()))
+                .map(hall -> HallDto.builder()
+                        .id(hall.getId())
+                        .className(hall.getClassName())
+                        .teacher(hall.getTeacher())
+                        .students(hall.getStudents())
+                        .day(hall.getDay())
+                        .timeSlot(hall.getTimeSlot())
+                        .build())
                 .collect(Collectors.toList());
     }
 
     @Override
     public HallDto getHallById(Long id) {
         Optional<HallEntity> optional = hallRepository.findById(id);
-        return optional.map(hall -> new HallDto(hall.getId(), hall.getName(), hall.getCapacity(), hall.getLocation()))
+        return optional.map(hall -> HallDto.builder()
+                        .id(hall.getId())
+                        .className(hall.getClassName())
+                        .teacher(hall.getTeacher())
+                        .students(hall.getStudents())
+                        .day(hall.getDay())
+                        .timeSlot(hall.getTimeSlot())
+                        .build())
                 .orElse(null);
     }
 
