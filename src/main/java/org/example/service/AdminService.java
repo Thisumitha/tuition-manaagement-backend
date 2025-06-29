@@ -9,4 +9,7 @@ public interface AdminService {
     List<AdminDto> getAllAdmins();
     AdminDto getAdminById(Long id);
     void deleteAdmin(Long id);
+    double calculateTotalProfit();
+    AdminDto login(String email, String password);
+
 }

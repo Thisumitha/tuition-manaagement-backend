@@ -70,4 +70,37 @@ public class TeacherServiceImpl implements TeacherService {
                         .build())
                 .collect(Collectors.toList());
     }
+    @Override
+    public void payTeacher(Long teacherId, double amount) {
+        if (amount <= 0) {
+            throw new IllegalArgumentException("Amount must be positive.");
+        }
+
+        TeacherEntity teacher = teacherRepository.findById(teacherId)
+                .orElseThrow(() -> new RuntimeException("Teacher not found"));
+
+        if (teacher.getWallet() < amount) {
+            throw new IllegalStateException("Insufficient funds in teacher's wallet.");
+        }
+
+        // Reset wallet after paying (or deduct if doing partial payments)
+        teacher.setWallet(teacher.getWallet() - amount);
+        teacherRepository.save(teacher);
+    }
+    @Override
+    public List<TeacherDto> getAllTeachersWithWallets() {
+        return teacherRepository.findAll().stream()
+                .map(entity -> TeacherDto.builder()
+                        .id(entity.getId())
+                        .name(entity.getName())
+                        .subject(entity.getSubject())
+                        .email(entity.getEmail())
+                        .phone(entity.getPhone())
+                        .wallet(entity.getWallet())
+                        .build())
+                .collect(Collectors.toList());
+    }
+
+
+
 }

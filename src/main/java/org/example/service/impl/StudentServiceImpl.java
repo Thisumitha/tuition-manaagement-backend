@@ -2,8 +2,14 @@ package org.example.service.impl;
 
 import lombok.RequiredArgsConstructor;
 import org.example.dto.StudentDto;
+import org.example.entity.AdminEntity;
+import org.example.entity.HallEntity;
 import org.example.entity.StudentEntity;
+import org.example.entity.TeacherEntity;
+import org.example.repository.AdminRepository;
+import org.example.repository.HallRepository;
 import org.example.repository.StudentRepository;
+import org.example.repository.TeacherRepository;
 import org.example.service.StudentService;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
@@ -18,6 +24,9 @@ public class StudentServiceImpl implements StudentService {
 
     private final StudentRepository studentRepository;
     private final ModelMapper modelMapper;
+    private final HallRepository hallRepository;
+    private final TeacherRepository teacherRepository;
+    private final AdminRepository adminRepository;
 
     @Override
     public StudentDto createStudent(StudentDto dto) {
@@ -68,7 +77,7 @@ public class StudentServiceImpl implements StudentService {
                 .collect(Collectors.toList());
     }
     @Override
-    @Transactional // Ensures the operation is atomic
+    @Transactional
     public void processStudentPayment(Long studentId, double amount) {
         StudentEntity student = studentRepository.findById(studentId)
                 .orElseThrow(() -> new RuntimeException("Student not found with ID: " + studentId));
@@ -77,16 +86,43 @@ public class StudentServiceImpl implements StudentService {
             throw new IllegalArgumentException("Payment amount must be positive.");
         }
 
-        // Ensure the paid amount does not exceed the due amount
         if (amount > student.getWallet()) {
-            throw new IllegalArgumentException("Payment amount exceeds the due amount. Due: $" + student.getWallet());
+            throw new IllegalArgumentException("Payment amount exceeds due amount. Due: $" + student.getWallet());
         }
 
-        // Reduce the wallet amount by the paid amount
+        // Deduct from student's wallet
         student.setWallet(student.getWallet() - amount);
-
         studentRepository.save(student);
+
+        // Find the hall that the student is part of
+        HallEntity hall = hallRepository.findAll().stream()
+                .filter(h -> h.getStudentIds().contains(student.getId())) // Compare by ID
+                .findFirst()
+                .orElseThrow(() -> new RuntimeException("Hall not found for student ID: " + studentId));
+
+        // Split payment
+        double teacherShare = amount * 0.85;
+        double adminShare = amount * 0.15;
+
+        // Credit teacher
+        TeacherEntity teacher = teacherRepository.findById(hall.getTeacherId())
+                .orElseThrow(() -> new RuntimeException("Teacher not found for ID: " + hall.getTeacherId()));
+
+        teacher.setWallet(teacher.getWallet() + teacherShare);
+        teacherRepository.save(teacher);
+
+        AdminEntity admin = adminRepository.findByUsername("admin") // Find the admin by username
+                .orElseThrow(() -> new RuntimeException("Admin user 'admin' not found. Cannot add admin share."));
+
+        admin.setBalance(admin.getBalance() + adminShare); // Add the admin share to their balance
+        adminRepository.save(admin); // Save the updated AdminEntity
+
+
+        // Optionally: log or store admin share
+        System.out.println("Admin earned: " + adminShare + " from student ID: " + studentId);
     }
+
+
 
 
 }

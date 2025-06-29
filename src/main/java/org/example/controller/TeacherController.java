@@ -3,6 +3,7 @@ package org.example.controller;
 import lombok.RequiredArgsConstructor;
 import org.example.dto.TeacherDto;
 import org.example.service.TeacherService;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -39,4 +40,28 @@ public class TeacherController {
     public List<TeacherDto> getAllTeachers() {
         return teacherService.getAllTeachers();
     }
+
+    @PostMapping("/pay/{id}")
+    public ResponseEntity<String> payTeacher(@PathVariable Long id, @RequestParam double amount) {
+        try {
+            teacherService.payTeacher(id, amount);
+            return ResponseEntity.ok("✅ Teacher ID " + id + " paid amount $" + amount);
+        } catch (RuntimeException e) {
+            return ResponseEntity.badRequest().body("❌ Payment failed: " + e.getMessage());
+        }
+    }
+    @GetMapping("/wallets")
+    public ResponseEntity<List<TeacherDto>> getAllWithWallets() {
+        return ResponseEntity.ok(teacherService.getAllTeachersWithWallets());
+    }
+    @GetMapping("/wallets/total")
+    public ResponseEntity<Double> getTotalPendingPayments() {
+        double total = teacherService.getAllTeachersWithWallets()
+                .stream()
+                .mapToDouble(TeacherDto::getWallet)
+                .sum();
+        return ResponseEntity.ok(total);
+    }
+
+
 }

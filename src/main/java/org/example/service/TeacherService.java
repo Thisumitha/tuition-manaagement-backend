@@ -10,4 +10,7 @@ public interface TeacherService {
     void deleteTeacher(Long id);
     TeacherDto getTeacherById(Long id);
     List<TeacherDto> getAllTeachers();
+    void payTeacher(Long teacherId, double amount);
+    List<TeacherDto> getAllTeachersWithWallets();
+
 }
