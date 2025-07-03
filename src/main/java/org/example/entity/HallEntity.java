@@ -2,6 +2,8 @@ package org.example.entity;
 
 import jakarta.persistence.*;
 import lombok.*;
+
+import java.util.Collection;
 import java.util.List;
 
 @Entity
@@ -25,4 +27,5 @@ public class HallEntity {
 
     private Double classFee;
     private Double hallFeePercentage;
+
 }

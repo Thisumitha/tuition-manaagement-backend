@@ -3,6 +3,8 @@ package org.example.entity;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.util.Collection;
+
 @Entity
 @Data
 @NoArgsConstructor
@@ -19,4 +21,5 @@ public class StudentEntity {
     private String phone;
     private String subject;
     private  double wallet;
+
 }

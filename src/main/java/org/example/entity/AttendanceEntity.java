@@ -24,4 +24,5 @@ public class AttendanceEntity {
     private Long classId;
 
     private LocalDateTime timestamp;
+
 }
