@@ -67,5 +67,6 @@ class AdminControllerTest {
         when(adminService.login(dto.getEmail(), dto.getPassword())).thenReturn(dto);
         AdminDto result = adminController.login(dto);
         assertEquals(dto, result);
+        //done
     }
 }
